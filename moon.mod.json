@@ -1,10 +1,18 @@
 {
   "name": "moonbit-readline",
   "version": "0.1.0",
+  "deps": {
+    "moonbitlang/async": "0.3.1"
+  },
   "readme": "README.md",
   "repository": "",
   "license": "MIT",
-  "keywords": ["readline", "input", "terminal", "cli"],
+  "keywords": [
+    "readline",
+    "input",
+    "terminal",
+    "cli"
+  ],
   "description": "A complete Node.js readline-compatible library for MoonBit",
   "source": "src"
 }
