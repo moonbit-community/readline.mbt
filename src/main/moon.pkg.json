@@ -1,6 +1,13 @@
 {
   "is_main": true,
   "supported-targets": ["native"],
+  "link": {
+    "native": {
+      "cc": "gcc",
+      "cc-flags": "-I/opt/homebrew/opt/readline/include -std=c99",
+      "cc-link-flags": "-L/opt/homebrew/opt/readline/lib -lreadline -lhistory"
+    }
+  },
   "import": [
     "moonbit-readline/lib"
   ]  

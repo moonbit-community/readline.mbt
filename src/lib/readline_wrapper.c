@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sys/select.h>
+#include <sys/ioctl.h>
 #include <errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -260,7 +261,12 @@ void mbt_readline_set_completion_callback(void (*callback)(void)) {
 char* moonbit_string_to_cstr(moonbit_string_t ms) {
     if (!ms) return NULL;
     
-    int32_t len = moonbit_string_length(ms);
+    // Get string length by iterating until we find the end or a reasonable limit
+    int32_t len = 0;
+    while (len < 10000 && ms[len] != 0) { // Safety limit to prevent infinite loop
+        len++;
+    }
+    
     char* cstr = malloc(len + 1);
     if (!cstr) return NULL;
     
