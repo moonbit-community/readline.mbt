@@ -1,6 +1,7 @@
 {
-  "is-main": true,
+  "is_main": true,
+  "supported-targets": ["native"],
   "import": [
-    "username/hello/lib"
+    "moonbit-readline/lib"
   ]
 }

@@ -1,10 +1,10 @@
 {
-  "name": "allwefantasy/readline.mbt",
+  "name": "moonbit-readline",
   "version": "0.1.0",
   "readme": "README.md",
   "repository": "",
-  "license": "Apache-2.0",
-  "keywords": [],
-  "description": "",
+  "license": "MIT",
+  "keywords": ["readline", "input", "terminal", "cli"],
+  "description": "A complete Node.js readline-compatible library for MoonBit",
   "source": "src"
 }
