@@ -2,14 +2,7 @@
 
 ///|
 fn main {
-  println("MoonBit Readline Library Demo")
-  println("============================")
-
-  // Simple test - just create an interface
-  println("\n--- Testing Interface Creation ---")
-  test_repl()
-  println("Interface created successfully!")
-  println("All tests completed successfully!")
+  ignore(test_repl())
 }
 
 ///|
@@ -62,6 +55,6 @@ fn test_repl() -> Unit {
   println("REPL started. Type 'help' for available commands.")
   println("Type 'exit' to quit.")
 
-  // Start the REPL (in a real implementation)
+  // Note: In a real implementation, you would call repl.start() to start interactive mode
   repl.start()
 }
