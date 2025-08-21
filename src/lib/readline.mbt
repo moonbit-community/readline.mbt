@@ -300,8 +300,8 @@ pub fn REPL::add_command(
 pub fn REPL::start(self : REPL) -> Unit {
   self.rl.set_prompt(self.prompt_text)
   self.rl.on_line(fn(line) {
-    let parts_iter = line.split(" ")
     let parts = Array::new()
+    let parts_iter = @string.split(line, " ")
     for part in parts_iter {
       parts.push(part.to_string())
     }
@@ -316,7 +316,10 @@ pub fn REPL::start(self : REPL) -> Unit {
         None => println("Unknown command: \{command}")
       }
     }
-    self.rl.prompt()
+    // Only prompt again if interface is still open
+    if not(self.rl.is_closed) {
+      self.rl.prompt()
+    }
   })
   |> ignore
   self.rl.on_close(fn() { println("Goodbye!") }) |> ignore
@@ -406,12 +409,7 @@ fn mbt_get_window_size(rows : Ref[Int], cols : Ref[Int]) -> Int {
   0
 }
 
-///|
-fn mbt_readline_init() -> Int {
-  0 // Success
-}
+// mbt_readline_init is now declared as FFI in interface.mbt
 
 ///|
-fn mbt_readline_cleanup() -> Unit {
-  // Placeholder cleanup
-}
+// mbt_readline_cleanup 已在 interface.mbt 中声明为 extern "C" 函数

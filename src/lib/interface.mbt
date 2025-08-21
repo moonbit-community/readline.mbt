@@ -1,5 +1,10 @@
 // Readline Interface implementation compatible with Node.js readline
 
+// FFI declarations
+
+///|
+extern "C" fn mbt_readline_init() -> Int = "mbt_readline_init"
+
 // Interface options (matching Node.js readline)
 
 ///|
@@ -200,8 +205,8 @@ fn Interface::new(options : InterfaceOptions) -> Interface {
     panic()
   }
 
-  // Set history size
-  mbt_readline_set_history_size(interface.history_max_size)
+  // Set history size - placeholder function call
+  mbt_readline_set_history_size_placeholder(interface.history_max_size)
 
   // Set prompt
   mbt_readline_set_prompt(string_to_c_bytes(interface.prompt_text))
@@ -277,20 +282,31 @@ pub fn Interface::question(
 }
 
 ///|
-fn Interface::prompt(self : Interface, preserve_cursor~ : Bool = false) -> Unit {
+pub fn Interface::prompt(
+  self : Interface,
+  preserve_cursor~ : Bool = false,
+) -> Unit {
   if self.is_closed || self.is_paused {
     return
   }
 
   // Write prompt and read line in a blocking manner
   // In a real async implementation, this would be handled differently
-  let line = mbt_readline_read_line_mbt(self.prompt_text)
-  if line.length() > 0 {
-    self.events.emit_line(line) |> ignore
+  let line_result = mbt_readline_read_line_mbt(self.prompt_text)
+  match line_result {
+    Some(line) =>
+      if line.length() > 0 {
+        self.events.emit_line(line) |> ignore
 
-    // Add to history if not duplicate or if duplicates are allowed
-    if not(self.remove_duplicates) || not(self.is_duplicate_history(line)) {
-      mbt_readline_add_history(string_to_c_bytes(line))
+        // Add to history if not duplicate or if duplicates are allowed
+        if not(self.remove_duplicates) || not(self.is_duplicate_history(line)) {
+          mbt_readline_add_history(string_to_c_bytes(line))
+        }
+      }
+    None => {
+      // EOF encountered, close the interface
+      self.is_closed = true
+      self.events.emit_close() |> ignore
     }
   }
 }
@@ -312,14 +328,24 @@ fn Interface::write(
 }
 
 ///|
-fn Interface::pause(self : Interface) -> Interface {
-  if not(self.is_closed) && not(self.is_paused) {
-    self.is_paused = true
-    mbt_readline_pause()
-    self.events.emit_pause() |> ignore
-  }
-  self
+extern "C" fn mbt_readline_cleanup() -> Unit = "mbt_readline_cleanup"
+
+///|
+extern "C" fn mbt_readline_read_line_mbt(prompt : String) -> String? = "mbt_readline_read_line_mbt"
+
+///|
+extern "C" fn mbt_readline_add_history(line : Bytes) -> Unit = "mbt_readline_add_history"
+
+///|
+fn mbt_readline_set_history_size_placeholder(_size : Int) -> Unit {
+  // Placeholder function for setting history size
 }
+
+///|
+extern "C" fn mbt_readline_write(data : Bytes) -> Unit = "mbt_readline_write"
+
+///|
+extern "C" fn mbt_readline_clear_history() -> Unit = "mbt_readline_clear_history"
 
 ///|
 fn Interface::resume(self : Interface) -> Interface {
@@ -528,12 +554,10 @@ pub fn create_interface_simple(
   create_interface(options)
 }
 
-// Placeholder implementations for missing functions
+// FFI declarations for C functions
 
 ///|
-fn mbt_readline_set_history_size(_size : Int) -> Unit {
-  // Placeholder
-}
+// mbt_readline_init 已在前面声明
 
 ///|
 fn mbt_readline_set_prompt(_prompt : Bytes) -> Unit {
@@ -561,14 +585,9 @@ fn mbt_readline_set_close_callback(_callback : FuncRef[() -> Unit]) -> Unit {
 }
 
 ///|
-fn mbt_readline_read_line_mbt(prompt : String) -> String {
-  prompt // Placeholder - just return the prompt
-}
+// mbt_readline_read_line_mbt 已在前面声明为 extern "C" 函数
 
-///|
-fn mbt_readline_add_history(_line : Bytes) -> Unit {
-  // Placeholder
-}
+// mbt_readline_add_history is now declared as FFI
 
 ///|
 fn mbt_readline_pause() -> Unit {
@@ -585,10 +604,7 @@ fn mbt_readline_close() -> Unit {
   // Placeholder
 }
 
-///|
-fn mbt_readline_clear_history() -> Unit {
-  // Placeholder
-}
+// mbt_readline_clear_history is now declared as FFI
 
 ///|
 fn mbt_readline_history_length() -> Int {
@@ -601,10 +617,7 @@ fn mbt_readline_get_history(_index : Int) -> CString {
   create_empty_cstring()
 }
 
-///|
-fn mbt_readline_write(_data : Bytes) -> Unit {
-  // Placeholder
-}
+// mbt_readline_write is now declared as FFI
 
 ///|
 fn string_to_c_bytes(s : String) -> Bytes {

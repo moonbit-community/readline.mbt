@@ -182,7 +182,17 @@ char* mbt_readline_read_line(const char* prompt) {
     const char* use_prompt = prompt ? prompt : readline_state.prompt;
     char* line = readline(use_prompt);
     
-    if (line && strlen(line) > 0) {
+    // Handle EOF or interruption
+    if (line == NULL) {
+        // EOF encountered, set closed state to prevent further reads
+        readline_state.closed = 1;
+        if (readline_state.close_callback) {
+            readline_state.close_callback();
+        }
+        return NULL;
+    }
+    
+    if (strlen(line) > 0) {
         add_history(line);
     }
     
