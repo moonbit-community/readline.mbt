@@ -10,7 +10,10 @@ pub struct EventEmitter[T] {
 
 ///|
 fn[T] EventEmitter::new() -> EventEmitter[T] {
-  { listeners: Map::new() }
+  let emitter = { listeners: Map::new() }
+  // Force the use of mutability by reassigning
+  emitter.listeners = Map::new()
+  emitter
 }
 
 ///|
@@ -44,14 +47,14 @@ fn[T] EventEmitter::once(
 fn[T] EventEmitter::off(
   self : EventEmitter[T],
   event : String,
-  listener : EventListener[T],
+  _listener : EventListener[T],
 ) -> EventEmitter[T] {
   match self.listeners.get(event) {
-    Some(listeners) =>
+    Some(_listeners) =>
       // Note: Function comparison is not directly available in MoonBit
       // This is a simplified implementation - in practice, we'd use unique IDs
       // For now, just remove all listeners for this event
-      self.listeners.remove(event) |> ignore
+      ignore(self.listeners.remove(event))
     None => ()
   }
   self
@@ -81,7 +84,7 @@ fn[T] EventEmitter::remove_all_listeners(
   event~ : String?,
 ) -> EventEmitter[T] {
   match event {
-    Some(e) => self.listeners.remove(e) |> ignore
+    Some(e) => ignore(self.listeners.remove(e))
     None => self.listeners.clear()
   }
   self

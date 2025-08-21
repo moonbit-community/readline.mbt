@@ -3,5 +3,5 @@
   "supported-targets": ["native"],
   "import": [
     "moonbit-readline/lib"
-  ]
+  ]  
 }

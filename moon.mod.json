@@ -14,5 +14,6 @@
     "cli"
   ],
   "description": "A complete Node.js readline-compatible library for MoonBit",
-  "source": "src"
+  "source": "src",
+  "preferred-target": "native"
 }

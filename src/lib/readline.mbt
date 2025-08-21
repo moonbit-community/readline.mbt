@@ -8,63 +8,23 @@
 ///|
 typealias (String) -> (Array[String], String) as CompletionFunction
 
-// Import completion functions
+// Import completion functions from history.mbt
+// file_path_completer is now defined in history.mbt
 
-///|
-fn file_path_completer(word : String) -> (Array[String], String) {
-  // Simple file path completion
-  let completions = Array::new()
-
-  // Mock implementation - in practice, we'd scan directories
-  if word.starts_with("/") {
-    completions.push("/usr/")
-    completions.push("/home/")
-    completions.push("/etc/")
-  } else if word.starts_with("./") {
-    completions.push("./src/")
-    completions.push("./lib/")
-    completions.push("./bin/")
-  } else {
-    completions.push("src/")
-    completions.push("lib/")
-    completions.push("README.md")
-  }
-
-  // Filter completions that start with the word
-  let filtered = Array::new()
-  for completion in completions {
-    if completion.starts_with(word) {
-      filtered.push(completion)
-    }
-  }
-  (filtered, word)
-}
-
-///|
-fn command_completer(commands : Array[String]) -> CompletionFunction {
-  fn(word : String) -> (Array[String], String) {
-    let filtered = Array::new()
-    for command in commands {
-      if command.starts_with(word) {
-        filtered.push(command)
-      }
-    }
-    (filtered, word)
-  }
-}
+// command_completer is now defined in history.mbt
 
 // Main readline module functions (Node.js compatible)
 
 ///| Create a readline interface with specified options
 
-///| This is the main entry point for creating readline interfaces
-pub fn createInterface(options : InterfaceOptions) -> Interface {
-  create_interface(options)
-}
-
-///| Create a simple readline interface with just input/output streams
+///| Create a simple readline interface with just input/output streams  
 pub fn createInterface(input? : String, output? : String) -> Interface {
   create_interface_simple(input~, output~)
+}
+
+///| Create a readline interface with full options
+pub fn createInterfaceWithOptions(options : InterfaceOptions) -> Interface {
+  create_interface(options)
 }
 
 // Note: Async interfaces would be available when MoonBit has full async support
@@ -74,22 +34,22 @@ pub fn createInterface(input? : String, output? : String) -> Interface {
 
 ///| Clear the screen down from cursor position
 pub fn clearScreenDown(stream? : String) -> Unit {
-  clear_screen_down(stream~)
+  clear_screen_down(_stream=stream)
 }
 
 ///| Move cursor to specified position
 pub fn cursorTo(x : Int, y? : Int, stream? : String) -> Unit {
-  cursor_to(x, y~, stream~)
+  cursor_to(x, y~, _stream=stream)
 }
 
 ///| Move cursor by relative amount
 pub fn moveCursor(dx : Int, dy? : Int, stream? : String) -> Unit {
-  move_cursor(dx, dy~, stream~)
+  move_cursor(dx, dy~, _stream=stream)
 }
 
 ///| Clear current line
 pub fn clearLine(dir : Int, stream? : String) -> Unit {
-  clear_line(dir, stream~)
+  clear_line(dir, _stream=stream)
 }
 
 // Utility functions for working with readline
@@ -164,7 +124,7 @@ pub fn confirm(
 }
 
 ///| Async confirm dialog (placeholder - not implemented)
-pub fn confirmAsync(message : String, default~ : Bool = false) -> Bool {
+pub fn confirmAsync(_message : String, default~ : Bool = false) -> Bool {
   // This would be async in a real implementation
   default // Placeholder return
 }
@@ -192,7 +152,7 @@ pub fn readMultipleLines(
 }
 
 ///| Async version of reading multiple lines (placeholder - not implemented)
-pub fn readMultipleLinesAsync(prompt : String) -> Array[String] {
+pub fn readMultipleLinesAsync(_prompt : String) -> Array[String] {
   // This would be async in a real implementation
   Array::new() // Placeholder return
 }
@@ -212,11 +172,16 @@ pub fn selectFromMenu(
   }
   fn ask_selection() {
     rl.question("Select an option (1-\{options.length()}): ", fn(answer) {
-      match @strconv.parse_int(answer) {
-        Ok(choice) if choice >= 1 && choice <= options.length() => {
+      try {
+        let choice = @strconv.parse_int(answer)
+        if choice >= 1 && choice <= options.length() {
           callback(Some(choice - 1)) // Return 0-based index
           rl.close()
+        } else {
+          rl.write("Invalid selection. Please try again.\n")
+          ask_selection()
         }
+      } catch {
         _ => {
           rl.write("Invalid selection. Please try again.\n")
           ask_selection()
@@ -229,7 +194,7 @@ pub fn selectFromMenu(
 }
 
 ///| Async menu selection (placeholder - not implemented)
-pub fn selectFromMenuAsync(title : String, options : Array[String]) -> Int? {
+pub fn selectFromMenuAsync(_title : String, _options : Array[String]) -> Int? {
   // This would be async in a real implementation
   None // Placeholder return
 }
@@ -285,7 +250,7 @@ pub fn createInterfaceWithCompletion(
 pub fn password(
   prompt : String,
   callback : (String) -> Unit,
-  mask~ : String = "*",
+  _mask~ : String = "*",
 ) -> Unit {
   // Note: This is a simplified implementation
   // A full implementation would need terminal mode manipulation
@@ -298,7 +263,7 @@ pub fn password(
 }
 
 ///| Async password input (placeholder - not implemented)
-pub fn passwordAsync(prompt : String, mask~ : String = "*") -> String {
+pub fn passwordAsync(_prompt : String, _mask~ : String = "*") -> String {
   // This would be async in a real implementation
   "" // Placeholder return
 }
@@ -315,7 +280,10 @@ pub struct REPL {
 ///|
 pub fn REPL::new(prompt~ : String = "> ") -> REPL {
   let rl = createInterface()
-  REPL::{ rl, commands: Map::new(), prompt_text: prompt }
+  let repl = REPL::{ rl, commands: Map::new(), prompt_text: prompt }
+  // Force the use of mutability by reassigning
+  repl.commands = Map::new()
+  repl
 }
 
 ///|
@@ -381,44 +349,44 @@ pub fn cleanup() -> Unit {
 // Import interface functions locally
 
 ///|
-pub fn clear_screen_down(stream~ : String?) -> Unit {
-  let escape_sequence = "\x1b[0J"
+pub fn clear_screen_down(_stream~ : String?) -> Unit {
+  let escape_sequence = "\u001b[0J"
   println(escape_sequence) // Placeholder
 }
 
 ///|
-pub fn cursor_to(x : Int, y~ : Int?, stream~ : String?) -> Unit {
+pub fn cursor_to(x : Int, y~ : Int?, _stream~ : String?) -> Unit {
   let escape_sequence = match y {
-    Some(row) => "\x1b[\{row + 1};\{x + 1}H"
-    None => "\x1b[\{x + 1}G"
+    Some(row) => "\u001b[\{row + 1};\{x + 1}H"
+    None => "\u001b[\{x + 1}G"
   }
   println(escape_sequence) // Placeholder
 }
 
 ///|
-pub fn move_cursor(dx : Int, dy~ : Int?, stream~ : String?) -> Unit {
+pub fn move_cursor(dx : Int, dy~ : Int?, _stream~ : String?) -> Unit {
   if dx != 0 {
     let direction = if dx > 0 { "C" } else { "D" }
     let amount = if dx > 0 { dx } else { -dx }
-    println("\x1b[\{amount}\{direction}") // Placeholder
+    println("\u001b[\{amount}\{direction}") // Placeholder
   }
   match dy {
     Some(delta) if delta != 0 => {
       let direction = if delta > 0 { "B" } else { "A" }
       let amount = if delta > 0 { delta } else { -delta }
-      println("\x1b[\{amount}\{direction}") // Placeholder
+      println("\u001b[\{amount}\{direction}") // Placeholder
     }
     _ => ()
   }
 }
 
 ///|
-pub fn clear_line(dir : Int, stream~ : String?) -> Unit {
+pub fn clear_line(dir : Int, _stream~ : String?) -> Unit {
   let escape_sequence = match dir {
-    0 => "\x1b[2K" // Clear entire line
-    1 => "\x1b[1K" // Clear from cursor to beginning
-    -1 => "\x1b[0K" // Clear from cursor to end
-    _ => "\x1b[2K" // Default to clear entire line
+    0 => "\u001b[2K" // Clear entire line
+    1 => "\u001b[1K" // Clear from cursor to beginning
+    -1 => "\u001b[0K" // Clear from cursor to end
+    _ => "\u001b[2K" // Default to clear entire line
   }
   println(escape_sequence) // Placeholder
 }
@@ -427,7 +395,7 @@ pub fn clear_line(dir : Int, stream~ : String?) -> Unit {
 // These functions are placeholders for wasm-gc backend
 
 ///|
-fn mbt_is_tty(fd : Int) -> Bool {
+fn mbt_is_tty(_fd : Int) -> Bool {
   false // Placeholder implementation
 }
 

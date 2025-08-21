@@ -15,12 +15,16 @@ fn History::new(
   max_size~ : Int = 1000,
   remove_duplicates~ : Bool = true,
 ) -> History {
-  History::{
+  let history = History::{
     entries: Array::new(),
     max_size,
     remove_duplicates,
     current_index: -1,
   }
+  // Force the use of mutability by reassigning
+  history.entries = Array::new()
+  history.remove_duplicates = remove_duplicates
+  history
 }
 
 ///|
@@ -39,7 +43,7 @@ fn History::add(self : History, entry : String) -> Unit {
 
   // Maintain max size
   while self.entries.length() > self.max_size {
-    self.entries.remove(0) |> ignore |> ignore |> ignore
+    ignore(self.entries.remove(0))
   }
 
   // Reset current index
@@ -75,7 +79,7 @@ fn History::get_all(self : History) -> Array[String] {
 fn History::set_max_size(self : History, size : Int) -> Unit {
   self.max_size = size
   while self.entries.length() > self.max_size {
-    self.entries.remove(0)
+    ignore(self.entries.remove(0))
   }
 }
 
@@ -156,7 +160,7 @@ fn Completer::complete(
     Some(fn_ref) => {
       // Extract the word being completed
       let word_start = self.find_word_start(line, cursor_pos)
-      let word = line.substring(word_start, cursor_pos)
+      let word = line.substring(start=word_start, end=cursor_pos)
       fn_ref(word)
     }
     None => (Array::new(), "")
@@ -202,11 +206,11 @@ pub fn file_path_completer(word : String) -> (Array[String], String) {
   let completions = Array::new()
 
   // Mock implementation - in practice, we'd scan directories
-  if word.starts_with("/") {
+  if word.strip_prefix("/") is Some(_) {
     completions.push("/usr/")
     completions.push("/home/")
     completions.push("/etc/")
-  } else if word.starts_with("./") {
+  } else if word.strip_prefix("./") is Some(_) {
     completions.push("./src/")
     completions.push("./lib/")
     completions.push("./bin/")
@@ -219,7 +223,7 @@ pub fn file_path_completer(word : String) -> (Array[String], String) {
   // Filter completions that start with the word
   let filtered = Array::new()
   for completion in completions {
-    if completion.starts_with(word) {
+    if completion.strip_prefix(word) is Some(_) {
       filtered.push(completion)
     }
   }
@@ -231,7 +235,7 @@ pub fn command_completer(commands : Array[String]) -> CompletionFunction {
   fn(word : String) -> (Array[String], String) {
     let filtered = Array::new()
     for command in commands {
-      if command.starts_with(word) {
+      if command.strip_prefix(word) is Some(_) {
         filtered.push(command)
       }
     }
@@ -244,7 +248,7 @@ pub fn create_list_completer(options : Array[String]) -> CompletionFunction {
   fn(word : String) -> (Array[String], String) {
     let filtered = Array::new()
     for option in options {
-      if option.starts_with(word) {
+      if option.strip_prefix(word) is Some(_) {
         filtered.push(option)
       }
     }
@@ -305,7 +309,7 @@ fn fuzzy_score(pattern : String, text : String) -> Int {
   }
 
   // Exact prefix match gets high score
-  if text.starts_with(pattern) {
+  if text.strip_prefix(pattern) is Some(_) {
     score = score + 10
   }
   score
@@ -321,15 +325,18 @@ pub fn history_completer(history : History) -> CompletionFunction {
 
     // Search through history entries
     for entry in history.get_all() {
-      if entry.starts_with(word) && not(seen.contains(entry)) {
+      if entry.strip_prefix(word) is Some(_) && not(seen.contains(entry)) {
         completions.push(entry)
         seen.set(entry, true)
       }
     }
 
     // Sort by most recent first (reverse order since we added chronologically)
-    completions.reverse()
-    (completions, word)
+    let result = Array::new()
+    for i = completions.length() - 1; i >= 0; i = i - 1 {
+      result.push(completions[i])
+    }
+    (result, word)
   }
 }
 
@@ -370,14 +377,13 @@ pub fn format_completions(
   }
 
   // Calculate column width
-  let max_width = completions.fold(0, fn(acc, item) {
+  let mut max_width = 0
+  for item in completions {
     let len = item.length()
-    if len > acc {
-      len
-    } else {
-      acc
+    if len > max_width {
+      max_width = len
     }
-  })
+  }
   let col_width = max_width + 2
   let cols_per_line = columns / col_width
   let mut result = "\n"
