@@ -1,0 +1,10 @@
+target/
+.mooncakes/
+.DS_Store
+.moonagent/
+
+.auto-coder/
+/actions/
+/output.txt
+.autocodercommands/
+/.autocoderignore
