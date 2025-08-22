@@ -1,6 +1,6 @@
 {
   "is_main": true,
-  "supported-targets": ["native"],
+  "supported-targets": ["native"],  
   "import": [
     "allwefantasy/moonbit-readline/lib"
   ]  
