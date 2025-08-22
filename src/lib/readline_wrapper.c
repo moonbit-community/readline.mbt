@@ -304,7 +304,8 @@ moonbit_string_t cstr_to_moonbit_string(const char* cstr) {
     return ms;
 }
 
-// Wrapper for readline that returns MoonBit string
+// Wrapper for readline that returns MoonBit string or NULL
+// MoonBit will automatically wrap this in Option[String]
 moonbit_string_t mbt_readline_read_line_mbt(moonbit_string_t prompt_ms) {
     char* prompt_cstr = prompt_ms ? moonbit_string_to_cstr(prompt_ms) : NULL;
     char* line = mbt_readline_read_line(prompt_cstr);

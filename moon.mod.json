@@ -15,5 +15,6 @@
   ],
   "description": "A complete Node.js readline-compatible library for MoonBit",
   "source": "src",
-  "preferred-target": "native"
+  "preferred-target": "native",
+  "--moonbit-unstable-prebuild": "build.js"
 }

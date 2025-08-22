@@ -22,12 +22,53 @@ Add this library to your MoonBit project:
 moon add moonbit-readline
 ```
 
-Make sure you have the GNU readline library installed on your system:
+### 🚀 自动配置
 
-- **Ubuntu/Debian**: `sudo apt-get install libreadline-dev`
-- **CentOS/RHEL**: `sudo yum install readline-devel`
-- **macOS**: `brew install readline`
-- **Windows**: Install readline library or use WSL
+这个库使用智能检测脚本来自动配置 readline 库：
+
+- ✅ **找到 readline 库时**：使用完整功能
+- ⚠️ **未找到时**：自动使用 mock 实现（功能有限）
+
+### 推荐：安装 readline 库
+
+为获得最佳体验，建议安装 GNU readline 库：
+
+#### macOS
+```bash
+brew install readline pkg-config
+```
+
+#### Ubuntu/Debian
+```bash
+sudo apt-get install libreadline-dev libncurses5-dev pkg-config
+```
+
+#### CentOS/RHEL/Fedora
+```bash
+# CentOS/RHEL
+sudo yum install readline-devel ncurses-devel pkgconfig
+# Fedora
+sudo dnf install readline-devel ncurses-devel pkgconfig
+```
+
+#### Windows
+```bash
+# 使用 MSYS2
+pacman -S mingw-w64-x86_64-readline mingw-w64-x86_64-ncurses
+```
+
+### 手动配置
+
+如果自动检测失败，可以设置环境变量：
+
+```bash
+export READLINE_ROOT=/path/to/readline
+# 或者
+export READLINE_INCLUDE_PATH=/path/to/readline/include
+export READLINE_LIB_PATH=/path/to/readline/lib
+```
+
+详细安装指南请参阅 [INSTALL.md](INSTALL.md)
 
 ## Quick Start
 
