@@ -1,5 +1,5 @@
 {
-  "name": "moonbit-readline",
+  "name": "allwefantasy/moonbit-readline",
   "version": "0.1.0",
   "deps": {
     "moonbitlang/async": "0.3.1"

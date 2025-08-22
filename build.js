@@ -66,12 +66,32 @@ function detectReadlineConfig() {
       if (cflags) ccFlags.push(...cflags.split(/\s+/).filter(f => f.trim()));
       if (libs) ccLinkFlags.push(...libs.split(/\s+/).filter(f => f.trim()));
     } catch (e) {
+      // 首先尝试检测 Homebrew keg-only 安装
+      let homebrewPrefix = null;
+      try {
+        homebrewPrefix = execSync('brew --prefix', { encoding: 'utf8' }).trim();
+      } catch (e) {
+        // brew 命令不存在，忽略
+      }
+      
       const possiblePaths = [
         '/opt/homebrew',     // Apple Silicon Homebrew
         '/usr/local',        // Intel Homebrew
         '/opt/local',        // MacPorts
         '/usr'               // 系统默认
       ];
+      
+      // 如果找到了 homebrew，也加入 readline 的 keg-only 路径
+      if (homebrewPrefix) {
+        try {
+          const readlinePrefix = execSync('brew --prefix readline', { encoding: 'utf8' }).trim();
+          if (readlinePrefix) {
+            possiblePaths.unshift(readlinePrefix);
+          }
+        } catch (e) {
+          // readline 包可能没安装，忽略
+        }
+      }
       
       for (const basePath of possiblePaths) {
         const includePath = path.join(basePath, 'include');
@@ -87,6 +107,13 @@ function detectReadlineConfig() {
           
           if (fs.existsSync(libReadline) || fs.existsSync(libReadlineA)) {
             ccLinkFlags.push(`-L${libPath}`, '-lreadline');
+            
+            // 检查 history 库
+            const libHistory = path.join(libPath, 'libhistory.dylib');
+            const libHistoryA = path.join(libPath, 'libhistory.a');
+            if (fs.existsSync(libHistory) || fs.existsSync(libHistoryA)) {
+              ccLinkFlags.push('-lhistory');
+            }
             
             // 在 macOS 上，readline 通常需要 ncurses
             const libNcurses = path.join(libPath, 'libncurses.dylib');
@@ -222,16 +249,20 @@ function detectReadlineConfig() {
 function generatePackageConfig() {
   const config = detectReadlineConfig();
   
-  const packageConfig = {
-    "supported-targets": ["native"],
-    "native-stub": config.useMockImplementation ? ["mock_readline.c"] : ["readline_wrapper.c"],
-    "link": {
-      "native": {
-        "cc": config.cc,
-        "cc-flags": config.ccFlags,
-        "cc-link-flags": config.ccLinkFlags
+  // 添加 -std=c99 到 cc-flags
+  let ccFlags = config.ccFlags;
+  if (ccFlags && ccFlags.trim() && !ccFlags.includes('-std=c99')) {
+    ccFlags = ccFlags.trim() + ' -std=c99';
+  } else if (!ccFlags || !ccFlags.trim()) {
+    ccFlags = '-std=c99';
+  }
+  
+  const packageConfig = {         
+    "link_configs": [{          
+        "package": "allwefantasy/moonbit-readline",  
+        "link_flags": ccFlags + " " + config.ccLinkFlags
       }
-    }
+    ]
   };
   
   // 输出配置给 moon 构建系统

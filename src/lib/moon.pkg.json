@@ -1,4 +1,4 @@
 {
   "supported-targets": ["native"],
-  "native-stub": ["mock_readline.c"]
+  "native-stub": ["readline_wrapper.c"]
 }
