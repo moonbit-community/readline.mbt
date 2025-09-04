@@ -22,16 +22,16 @@ Add this library to your MoonBit project:
 moon add moonbit-readline
 ```
 
-### 🚀 自动配置
+### 🚀 Automatic Configuration
 
-这个库使用智能检测脚本来自动配置 readline 库：
+This library uses intelligent detection scripts to automatically configure the readline library:
 
-- ✅ **找到 readline 库时**：使用完整功能
-- ⚠️ **未找到时**：自动使用 mock 实现（功能有限）
+- ✅ **When readline library is found**: Full functionality is used
+- ⚠️ **When not found**: Automatically uses mock implementation (limited functionality)
 
-### 推荐：安装 readline 库
+### Recommended: Install readline library
 
-为获得最佳体验，建议安装 GNU readline 库：
+For the best experience, it is recommended to install the GNU readline library:
 
 #### macOS
 ```bash
