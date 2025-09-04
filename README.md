@@ -57,18 +57,18 @@ sudo dnf install readline-devel ncurses-devel pkgconfig
 pacman -S mingw-w64-x86_64-readline mingw-w64-x86_64-ncurses
 ```
 
-### 手动配置
+### Manual Configuration
 
-如果自动检测失败，可以设置环境变量：
+If automatic detection fails, you can set environment variables:
 
 ```bash
 export READLINE_ROOT=/path/to/readline
-# 或者
+# or
 export READLINE_INCLUDE_PATH=/path/to/readline/include
 export READLINE_LIB_PATH=/path/to/readline/lib
 ```
 
-详细安装指南请参阅 [INSTALL.md](INSTALL.md)
+For detailed installation guide, please refer to [INSTALL.md](INSTALL.md)
 
 ## Quick Start
 
