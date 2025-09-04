@@ -3,31 +3,31 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MoonBit](https://img.shields.io/badge/MoonBit-0.1.0-blue.svg)](https://www.moonbitlang.com/)
 
-一个功能完整、与 Node.js readline 兼容的 MoonBit 库，提供强大的终端输入功能，完全支持异步编程。
+A complete Node.js readline-compatible library for MoonBit, providing powerful terminal input capabilities with full async support.
 
-## ✨ 特性
+## ✨ Features
 
-- **🔥 100% Node.js readline API 兼容**
-- **⚡ 异步支持** - 完整的 async/await 支持
-- **🎯 事件驱动架构** - EventEmitter 模式
-- **📝 高级行编辑** - 基于 GNU readline 后端
-- **📚 历史管理** - 搜索和导航功能
-- **🔍 Tab 补全** - 可自定义补全函数
-- **⚠️ 信号处理** - SIGINT, SIGTSTP, SIGCONT
-- **🖥️ 终端操作** - 光标控制、屏幕清理
-- **🌍 跨平台支持** - Linux, macOS, Windows
+- **🔥 100% Node.js readline API compatibility**
+- **⚡ Async support** - Complete async/await support
+- **🎯 Event-driven architecture** - EventEmitter pattern
+- **📝 Advanced line editing** - Based on GNU readline backend
+- **📚 History management** - Search and navigation functionality
+- **🔍 Tab completion** - Customizable completion functions
+- **⚠️ Signal handling** - SIGINT, SIGTSTP, SIGCONT
+- **🖥️ Terminal manipulation** - Cursor control, screen clearing
+- **🌍 Cross-platform support** - Linux, macOS, Windows
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 安装
+### Installation
 
-将此库添加到您的 MoonBit 项目：
+Add this library to your MoonBit project:
 
 ```bash
 moon add allwefantasy/readline.mbt
 ```
 
-### 基本用法
+### Basic Usage
 
 ```moonbit
 fn main {
@@ -40,7 +40,7 @@ fn main {
 }
 ```
 
-### 异步用法
+### Async Usage
 
 ```moonbit
 fn main {
@@ -55,11 +55,11 @@ async fn run_async_example() -> Unit raise {
 }
 ```
 
-## 📦 系统要求
+## 📦 System Requirements
 
-### 推荐：安装 readline 库
+### Recommended: Install readline library
 
-为了获得最佳体验，建议安装 GNU readline 库：
+For the best experience, it's recommended to install the GNU readline library:
 
 #### macOS
 ```bash
@@ -84,31 +84,31 @@ sudo dnf install readline-devel ncurses-devel pkgconfig
 pacman -S mingw-w64-x86_64-readline mingw-w64-x86_64-ncurses
 ```
 
-### 🤖 自动配置
+### 🤖 Automatic Configuration
 
-本库使用智能检测脚本自动配置 readline 库：
+This library uses intelligent detection scripts to automatically configure the readline library:
 
-- ✅ **找到 readline 库时**：使用完整功能
-- ⚠️ **未找到时**：自动使用模拟实现（功能受限）
+- ✅ **When readline library is found**: Full functionality is used
+- ⚠️ **When not found**: Automatically uses mock implementation (limited functionality)
 
-### 手动配置
+### Manual Configuration
 
-如果自动检测失败，可以设置环境变量：
+If automatic detection fails, you can set environment variables:
 
 ```bash
 export READLINE_ROOT=/path/to/readline
-# 或者
+# or
 export READLINE_INCLUDE_PATH=/path/to/readline/include
 export READLINE_LIB_PATH=/path/to/readline/lib
 ```
 
-## 📖 API 参考
+## 📖 API Reference
 
-### 创建接口
+### Creating Interfaces
 
 #### `create_interface(options: InterfaceOptions) -> Interface`
 
-使用指定选项创建 readline 接口。
+Creates a readline interface with specified options.
 
 ```moonbit
 let options = InterfaceOptions::new()
@@ -122,17 +122,17 @@ let rl = @lib.create_interface(options)
 
 #### `create_interface_simple(input~: String?, output~: String?) -> Interface`
 
-简单接口创建。
+Simple interface creation.
 
 ```moonbit
 let rl = @lib.create_interface_simple(input="stdin", output="stdout")
 ```
 
-### 接口方法
+### Interface Methods
 
 #### `question(query: String, callback: (String) -> Unit) -> Unit`
 
-询问问题并获取用户输入。
+Ask a question and get user input.
 
 ```moonbit
 rl.question("Enter your age: ", fn(age) {
@@ -142,7 +142,7 @@ rl.question("Enter your age: ", fn(age) {
 
 #### `prompt(preserve_cursor~: Bool = false) -> Unit`
 
-显示提示符并等待输入。
+Display the prompt and wait for input.
 
 ```moonbit
 rl.set_prompt("custom> ")
@@ -151,7 +151,7 @@ rl.prompt()
 
 #### `write(data: String, key~: String? = None) -> Unit`
 
-向输出流写入数据。
+Write data to the output stream.
 
 ```moonbit
 rl.write("Output text\n")
@@ -159,37 +159,37 @@ rl.write("Output text\n")
 
 #### `pause() -> Self` / `resume() -> Self`
 
-暂停或恢复接口。
+Pause or resume the interface.
 
 ```moonbit
-rl.pause()   // 暂停输入处理
-rl.resume()  // 恢复输入处理
+rl.pause()   // Pause input processing
+rl.resume()  // Resume input processing
 ```
 
 #### `close() -> Unit`
 
-关闭接口并清理资源。
+Close the interface and clean up resources.
 
 ```moonbit
 rl.close()
 ```
 
-### 事件处理
+### Event Handling
 
-接口实现了 EventEmitter 模式，与 Node.js 兼容：
+The interface implements the EventEmitter pattern, compatible with Node.js:
 
 ```moonbit
-// 行输入事件
+// Line input event
 rl.on_line(fn(line) {
   println("Input: \{line}")
 })
 
-// 接口关闭事件
+// Interface closed event
 rl.on_close(fn() {
   println("Goodbye!")
 })
 
-// 信号事件
+// Signal events
 rl.on_sigint(fn() {
   println("Ctrl+C pressed")
 })
@@ -199,9 +199,9 @@ rl.on_sigtstp(fn() {
 })
 ```
 
-### 异步接口
+### Async Interface
 
-异步接口提供基于 Promise 的方法：
+The async interface provides Promise-based methods:
 
 ```moonbit
 async fn interactive_session() -> Unit raise {
@@ -215,11 +215,11 @@ async fn interactive_session() -> Unit raise {
 }
 ```
 
-### 实用函数
+### Utility Functions
 
 #### `questionAsync(prompt: String) -> String`
 
-简单的异步问题（自动创建和关闭接口）。
+Simple async question (automatically creates and closes interface).
 
 ```moonbit
 let name = await @lib.questionAsync("Your name: ")
@@ -227,7 +227,7 @@ let name = await @lib.questionAsync("Your name: ")
 
 #### `confirmAsync(message: String, default~: Bool = false) -> Bool`
 
-异步确认对话框。
+Async confirmation dialog.
 
 ```moonbit
 let confirmed = await @lib.confirmAsync("Continue?", default=true)
@@ -235,16 +235,16 @@ let confirmed = await @lib.confirmAsync("Continue?", default=true)
 
 #### `selectFromMenuAsync(title: String, options: Array[String]) -> Int?`
 
-异步菜单选择。
+Async menu selection.
 
 ```moonbit
 let options = ["Option A", "Option B", "Option C"]
 let choice = await @lib.selectFromMenuAsync("Select:", options)
 ```
 
-### 补全功能
+### Completion
 
-创建自定义补全函数：
+Create custom completion functions:
 
 ```moonbit
 fn my_completer(word: String) -> (Array[String], String) {
@@ -264,22 +264,22 @@ let options = InterfaceOptions::new().with_completer(my_completer)
 let rl = @lib.create_interface(options)
 ```
 
-### 历史管理
+### History Management
 
 ```moonbit
-// 清除历史
+// Clear history
 rl.clear_history()
 
-// 获取历史长度
+// Get history length
 let len = mbt_readline_history_length()
 
-// 设置历史大小
+// Set history size
 let options = InterfaceOptions::new().with_history_size(500)
 ```
 
-## 💡 使用示例
+## 💡 Usage Examples
 
-### 交互式表单
+### Interactive Form
 
 ```moonbit
 async fn user_form() -> Unit raise {
@@ -289,7 +289,7 @@ async fn user_form() -> Unit raise {
   let name = await rl.question("Full name: ")
   let email = await rl.question("Email: ")
   
-  // 验证年龄输入
+  // Validate age input
   let mut age = 0
   while true {
     let age_str = await rl.question("Age: ")
@@ -312,7 +312,7 @@ async fn user_form() -> Unit raise {
 }
 ```
 
-### 命令行工具
+### Command Line Tool
 
 ```moonbit
 fn main {
@@ -343,7 +343,7 @@ fn main {
 }
 ```
 
-### 计算器示例
+### Calculator Example
 
 ```moonbit
 async fn calculator_example() -> Unit raise {
@@ -390,11 +390,11 @@ fn parse_and_calculate(expr: String) -> Double? {
 }
 ```
 
-## 🔄 Node.js 兼容性
+## 🔄 Node.js Compatibility
 
-此库设计为 Node.js readline 的直接替代品。以下是对比：
+This library is designed to be a drop-in replacement for Node.js readline. Here's a comparison:
 
-### Node.js 代码
+### Node.js Code
 ```javascript
 const readline = require('readline');
 
@@ -415,7 +415,7 @@ rl.question('What is your name? ', (name) => {
 });
 ```
 
-### MoonBit 代码
+### MoonBit Code
 ```moonbit
 let options = InterfaceOptions::new()
   .with_input("stdin")
@@ -435,9 +435,9 @@ rl.question("What is your name? ", fn(name) {
 })
 ```
 
-## 🛠️ 错误处理
+## 🛠️ Error Handling
 
-### 同步接口
+### Sync Interface
 ```moonbit
 let rl = @lib.create_interface_simple()
 
@@ -445,7 +445,7 @@ rl.on_close(fn() {
   println("Interface closed")
 })
 
-// 在回调中处理错误
+// Handle errors in callbacks
 rl.question("Input: ", fn(answer) {
   try {
     process_input(answer)
@@ -455,7 +455,7 @@ rl.question("Input: ", fn(answer) {
 })
 ```
 
-### 异步接口
+### Async Interface
 ```moonbit
 async fn safe_input() -> Unit raise {
   let rl = await @lib.createAsyncInterface()
@@ -470,76 +470,76 @@ async fn safe_input() -> Unit raise {
 }
 ```
 
-## ⚡ 性能说明
+## ⚡ Performance Notes
 
-- 库使用 GNU readline 进行最佳终端处理
-- 历史记录存储在内存中，在会话期间持续存在
-- 补全函数同步调用 - 保持其快速执行
-- 事件监听器按注册顺序调用
-- 异步接口默认每 10ms 轮询一次输入可用性
+- The library uses GNU readline for optimal terminal handling
+- History is stored in memory and persists during the session
+- Completion functions are called synchronously - keep them fast
+- Event listeners are called in the order they were registered
+- The async interface polls for input availability every 10ms by default
 
-## 🧪 运行示例
+## 🧪 Running Examples
 
-查看 `examples/` 目录中的示例：
+See examples in the `examples/` directory:
 
 ```bash
-# 基本用法示例
+# Basic usage examples
 moon run examples/basic_usage.mbt
 
-# 异步示例
+# Async examples
 moon run examples/async_examples.mbt
 ```
 
-## 🤝 贡献
+## 🤝 Contributing
 
-1. Fork 此仓库
-2. 创建功能分支
-3. 为新功能添加测试
-4. 确保所有示例正常工作
-5. 提交 Pull Request
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Ensure all examples work correctly
+5. Submit a pull request
 
-## 📜 许可证
+## 📜 License
 
-MIT License - 详情请参见 LICENSE 文件。
+MIT License - see LICENSE file for details.
 
-## 📚 依赖项
+## 📚 Dependencies
 
-- GNU readline 库 (libreadline)
-- MoonBit async 运行时
-- POSIX 兼容操作系统
+- GNU readline library (libreadline)
+- MoonBit async runtime
+- POSIX-compatible operating system
 
-## 🔧 故障排除
+## 🔧 Troubleshooting
 
-### 常见问题
+### Common Issues
 
 1. **"Failed to initialize readline"**
-   - 确保已安装 libreadline
-   - 检查库是否在系统库路径中
+   - Ensure libreadline is installed
+   - Check that the library is in your system's library path
 
-2. **补全不工作**
-   - 验证补全函数返回正确格式
-   - 检查终端是否启用了 tab 补全
+2. **Completion not working**
+   - Verify your completion function returns the correct format
+   - Check that tab completion is enabled in your terminal
 
-3. **异步函数挂起**
-   - 确保在 `@async.with_event_loop` 内运行
-   - 检查是否正确使用 `defer` 关闭接口
+3. **Async functions hanging**
+   - Ensure you're running inside `@async.with_event_loop`
+   - Check that you're properly closing interfaces with `defer`
 
-4. **信号处理不工作**
-   - 验证终端支持信号转发
-   - 检查信号处理程序是否正确注册
+4. **Signal handling not working**
+   - Verify your terminal supports signal forwarding
+   - Check that signal handlers are properly registered
 
-### 调试模式
+### Debug Mode
 
-启用调试输出（如果实现）：
+Enable debug output (if implemented):
 
 ```moonbit
-// 调试模式（特定于实现）
+// Debug mode (implementation-specific)
 let options = InterfaceOptions::new().with_debug(true)
 let rl = @lib.create_interface(options)
 ```
 
-更多示例和高级用法，请参见仓库中的 `examples/` 目录。
+For more examples and advanced usage, see the `examples/` directory in the repository.
 
 ---
 
-**📞 需要帮助？** 请在 GitHub 上创建 issue 或查看示例代码。
+**📞 Need Help?** Please create an issue on GitHub or check the example code.
