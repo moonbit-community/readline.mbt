@@ -259,7 +259,7 @@ function generatePackageConfig() {
   
   const packageConfig = {         
     "link_configs": [{          
-        "package": "allwefantasy/moonbit-readline/lib",  
+        "package": "allwefantasy/readline.mbt/lib",  
         "flags": ccFlags,
         "link_flags": config.ccLinkFlags
       }

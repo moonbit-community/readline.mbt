@@ -2,13 +2,12 @@
 
 ///|
 fn main {
-  ignore(test_repl())
+  ignore(repl())
 }
 
 ///|
-fn test_repl() -> Unit {
-  println("\n--- Test 5: REPL Interface ---")
-  let repl = @lib.REPL::new(prompt="demo> ")
+fn repl() -> Unit {  
+  let repl = @lib.REPL::new(prompt="moonagent> ")
   ignore(
     repl
     .add_command("hello", fn(args) {
