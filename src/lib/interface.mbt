@@ -331,9 +331,11 @@ fn Interface::write(
 extern "C" fn mbt_readline_cleanup() -> Unit = "mbt_readline_cleanup"
 
 ///|
+#borrow(prompt)
 extern "C" fn mbt_readline_read_line_mbt(prompt : String) -> String? = "mbt_readline_read_line_mbt"
 
 ///|
+#borrow(line)
 extern "C" fn mbt_readline_add_history(line : Bytes) -> Unit = "mbt_readline_add_history"
 
 ///|
@@ -342,6 +344,7 @@ fn mbt_readline_set_history_size_placeholder(_size : Int) -> Unit {
 }
 
 ///|
+#borrow(data)
 extern "C" fn mbt_readline_write(data : Bytes) -> Unit = "mbt_readline_write"
 
 ///|
@@ -627,8 +630,8 @@ fn string_to_c_bytes(s : String) -> Bytes {
 // CString implementation
 
 ///|
-#extern
-type CString
+#external
+priv type CString
 
 ///|
 fn CString::to_string(_self : CString) -> String {
