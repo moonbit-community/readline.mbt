@@ -18,7 +18,7 @@ fn repl() -> Unit {
     .add_command("calc", fn(args) {
       if args.length() >= 3 {
         match
-          (try? @strconv.parse_int(args[0]), try? @strconv.parse_int(args[2])) {
+          (try? @string.parse_int(args[0]), try? @string.parse_int(args[2])) {
           (Ok(a), Ok(b)) => {
             let result = match args[1] {
               "+" => a + b

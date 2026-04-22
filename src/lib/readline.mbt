@@ -6,7 +6,7 @@
 // Import CompletionFunction type from history module
 
 ///|
-typealias (String) -> (Array[String], String) as CompletionFunction
+pub type CompletionFunction = (String) -> (Array[String], String)
 
 // Import completion functions from history.mbt
 // file_path_completer is now defined in history.mbt
@@ -173,7 +173,7 @@ pub fn selectFromMenu(
   fn ask_selection() {
     rl.question("Select an option (1-\{options.length()}): ", fn(answer) {
       try {
-        let choice = @strconv.parse_int(answer)
+        let choice = @string.parse_int(answer)
         if choice >= 1 && choice <= options.length() {
           callback(Some(choice - 1)) // Return 0-based index
           rl.close()
@@ -301,7 +301,7 @@ pub fn REPL::start(self : REPL) -> Unit {
   self.rl.set_prompt(self.prompt_text)
   self.rl.on_line(fn(line) {
     let parts = Array::new()
-    let parts_iter = @string.split(line, " ")
+    let parts_iter = line.split(" ")
     for part in parts_iter {
       parts.push(part.to_string())
     }
@@ -317,7 +317,7 @@ pub fn REPL::start(self : REPL) -> Unit {
       }
     }
     // Only prompt again if interface is still open
-    if not(self.rl.is_closed) {
+    if !self.rl.is_closed {
       self.rl.prompt()
     }
   })

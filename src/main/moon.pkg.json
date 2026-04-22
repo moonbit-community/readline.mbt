@@ -2,6 +2,7 @@
   "is_main": true,
   "supported-targets": "native",
   "import": [
+    "moonbitlang/core/string",
     "allwefantasy/readline.mbt/lib"
   ]  
 }

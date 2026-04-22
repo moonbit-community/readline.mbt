@@ -129,7 +129,7 @@ pub enum ReadlineEvent {
 }
 
 ///|
-typealias EventEmitter[ReadlineEvent] as ReadlineEventEmitter
+type ReadlineEventEmitter = EventEmitter[ReadlineEvent]
 
 ///|
 fn ReadlineEventEmitter::create() -> ReadlineEventEmitter {

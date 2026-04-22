@@ -160,7 +160,7 @@ fn Completer::complete(
     Some(fn_ref) => {
       // Extract the word being completed
       let word_start = self.find_word_start(line, cursor_pos)
-      let word = line.substring(start=word_start, end=cursor_pos)
+      let word = line[word_start:cursor_pos].to_string()
       fn_ref(word)
     }
     None => (Array::new(), "")
@@ -175,8 +175,8 @@ fn Completer::find_word_start(
 ) -> Int {
   let mut start = cursor_pos - 1
   while start >= 0 {
-    let char = line.get(start).unwrap_or(' ')
-    if self.word_break_chars.contains(char.to_string()) {
+    let char = line[start:start + 1].to_string()
+    if self.word_break_chars.contains(char) {
       return start + 1
     }
     start = start - 1
@@ -282,7 +282,7 @@ fn fuzzy_match(pattern : String, text : String) -> Bool {
   let mut pattern_idx = 0
   let mut text_idx = 0
   while pattern_idx < pattern.length() && text_idx < text.length() {
-    if pattern.get(pattern_idx) == text.get(text_idx) {
+    if pattern.code_unit_at(pattern_idx) == text.code_unit_at(text_idx) {
       pattern_idx = pattern_idx + 1
     }
     text_idx = text_idx + 1
@@ -297,7 +297,7 @@ fn fuzzy_score(pattern : String, text : String) -> Int {
   let mut last_match = -1
   for text_idx = 0; text_idx < text.length(); text_idx = text_idx + 1 {
     if pattern_idx < pattern.length() &&
-      pattern.get(pattern_idx) == text.get(text_idx) {
+      pattern.code_unit_at(pattern_idx) == text.code_unit_at(text_idx) {
       score = score + 1
       // Consecutive matches get bonus points
       if last_match == text_idx - 1 {
@@ -325,7 +325,7 @@ pub fn history_completer(history : History) -> CompletionFunction {
 
     // Search through history entries
     for entry in history.get_all() {
-      if entry.strip_prefix(word) is Some(_) && not(seen.contains(entry)) {
+      if entry.strip_prefix(word) is Some(_) && !seen.contains(entry) {
         completions.push(entry)
         seen.set(entry, true)
       }
@@ -352,7 +352,7 @@ pub fn create_multi_completer(
     for completer in completers {
       let (completions, _) = completer(word)
       for completion in completions {
-        if not(seen.contains(completion)) {
+        if !seen.contains(completion) {
           all_completions.push(completion)
           seen.set(completion, true)
         }

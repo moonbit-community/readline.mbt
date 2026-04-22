@@ -299,7 +299,7 @@ pub fn Interface::prompt(
         self.events.emit_line(line) |> ignore
 
         // Add to history if not duplicate or if duplicates are allowed
-        if not(self.remove_duplicates) || not(self.is_duplicate_history(line)) {
+        if !self.remove_duplicates || !self.is_duplicate_history(line) {
           mbt_readline_add_history(string_to_c_bytes(line))
         }
       }
@@ -349,7 +349,7 @@ extern "C" fn mbt_readline_clear_history() -> Unit = "mbt_readline_clear_history
 
 ///|
 fn Interface::resume(self : Interface) -> Interface {
-  if not(self.is_closed) && self.is_paused {
+  if !self.is_closed && self.is_paused {
     self.is_paused = false
     mbt_readline_resume()
     self.events.emit_resume() |> ignore
@@ -359,7 +359,7 @@ fn Interface::resume(self : Interface) -> Interface {
 
 ///|
 pub fn Interface::close(self : Interface) -> Unit {
-  if not(self.is_closed) {
+  if !self.is_closed {
     self.is_closed = true
     mbt_readline_close()
     self.events.emit_close() |> ignore
@@ -621,7 +621,7 @@ fn mbt_readline_get_history(_index : Int) -> CString {
 
 ///|
 fn string_to_c_bytes(s : String) -> Bytes {
-  s.to_bytes()
+  @utf8.encode(s)
 }
 
 // CString implementation
