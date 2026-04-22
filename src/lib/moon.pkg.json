@@ -1,4 +1,4 @@
 {
-  "supported-targets": ["native"],
+  "supported-targets": "native",
   "native-stub": ["readline_wrapper.c"]
 }
