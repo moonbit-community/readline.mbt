@@ -11,7 +11,7 @@ pub struct History {
 }
 
 ///|
-fn History::new(
+pub fn History::new(
   max_size~ : Int = 1000,
   remove_duplicates~ : Bool = true,
 ) -> History {
@@ -28,7 +28,7 @@ fn History::new(
 }
 
 ///|
-fn History::add(self : History, entry : String) -> Unit {
+pub fn History::add(self : History, entry : String) -> Unit {
   if entry.length() == 0 {
     return
   }
@@ -51,7 +51,7 @@ fn History::add(self : History, entry : String) -> Unit {
 }
 
 ///|
-fn History::get(self : History, index : Int) -> String? {
+pub fn History::get(self : History, index : Int) -> String? {
   if index >= 0 && index < self.entries.length() {
     Some(self.entries[index])
   } else {
@@ -60,23 +60,23 @@ fn History::get(self : History, index : Int) -> String? {
 }
 
 ///|
-fn History::length(self : History) -> Int {
+pub fn History::length(self : History) -> Int {
   self.entries.length()
 }
 
 ///|
-fn History::clear(self : History) -> Unit {
+pub fn History::clear(self : History) -> Unit {
   self.entries.clear()
   self.current_index = -1
 }
 
 ///|
-fn History::get_all(self : History) -> Array[String] {
+pub fn History::get_all(self : History) -> Array[String] {
   self.entries.copy()
 }
 
 ///|
-fn History::set_max_size(self : History, size : Int) -> Unit {
+pub fn History::set_max_size(self : History, size : Int) -> Unit {
   self.max_size = size
   while self.entries.length() > self.max_size {
     ignore(self.entries.remove(0))
@@ -86,7 +86,7 @@ fn History::set_max_size(self : History, size : Int) -> Unit {
 // Navigation methods for readline
 
 ///|
-fn History::previous(self : History) -> String? {
+pub fn History::previous(self : History) -> String? {
   if self.entries.length() == 0 {
     return None
   }
@@ -97,7 +97,7 @@ fn History::previous(self : History) -> String? {
 }
 
 ///|
-fn History::next(self : History) -> String? {
+pub fn History::next(self : History) -> String? {
   if self.entries.length() == 0 {
     return None
   }
@@ -113,7 +113,7 @@ fn History::next(self : History) -> String? {
 // Search functionality
 
 ///|
-fn History::search(self : History, pattern : String) -> Array[String] {
+pub fn History::search(self : History, pattern : String) -> Array[String] {
   let results = Array::new()
   for entry in self.entries {
     if entry.contains(pattern) {
@@ -124,7 +124,7 @@ fn History::search(self : History, pattern : String) -> Array[String] {
 }
 
 ///|
-fn History::reverse_search(self : History, pattern : String) -> String? {
+pub fn History::reverse_search(self : History, pattern : String) -> String? {
   // Search backwards from current position
   for i = self.current_index - 1; i >= 0; i = i - 1 {
     let entry = self.entries[i]
@@ -146,12 +146,12 @@ pub struct Completer {
 }
 
 ///|
-fn Completer::new(completion_fn~ : CompletionFunction? = None) -> Completer {
+pub fn Completer::new(completion_fn~ : CompletionFunction? = None) -> Completer {
   Completer::{ completion_fn, word_break_chars: " \t\n\"\\'`@$><=;|&{(" }
 }
 
 ///|
-fn Completer::complete(
+pub fn Completer::complete(
   self : Completer,
   line : String,
   cursor_pos : Int,
@@ -185,7 +185,7 @@ fn Completer::find_word_start(
 }
 
 ///|
-fn Completer::set_completion_function(
+pub fn Completer::set_completion_function(
   self : Completer,
   fn_ref : CompletionFunction,
 ) -> Unit {
@@ -193,7 +193,7 @@ fn Completer::set_completion_function(
 }
 
 ///|
-fn Completer::set_word_break_chars(self : Completer, chars : String) -> Unit {
+pub fn Completer::set_word_break_chars(self : Completer, chars : String) -> Unit {
   self.word_break_chars = chars
 }
 

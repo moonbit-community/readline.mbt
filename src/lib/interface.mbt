@@ -22,7 +22,7 @@ pub struct InterfaceOptions {
 }
 
 ///|
-fn InterfaceOptions::new() -> InterfaceOptions {
+pub fn InterfaceOptions::new() -> InterfaceOptions {
   InterfaceOptions::{
     input: None,
     output: None,
@@ -38,7 +38,7 @@ fn InterfaceOptions::new() -> InterfaceOptions {
 }
 
 ///|
-fn InterfaceOptions::with_input(
+pub fn InterfaceOptions::with_input(
   self : InterfaceOptions,
   input : String,
 ) -> InterfaceOptions {
@@ -57,7 +57,7 @@ fn InterfaceOptions::with_input(
 }
 
 ///|
-fn InterfaceOptions::with_output(
+pub fn InterfaceOptions::with_output(
   self : InterfaceOptions,
   output : String,
 ) -> InterfaceOptions {
@@ -76,7 +76,7 @@ fn InterfaceOptions::with_output(
 }
 
 ///|
-fn InterfaceOptions::with_completer(
+pub fn InterfaceOptions::with_completer(
   self : InterfaceOptions,
   completer : (String) -> (Array[String], String),
 ) -> InterfaceOptions {
@@ -95,7 +95,7 @@ fn InterfaceOptions::with_completer(
 }
 
 ///|
-fn InterfaceOptions::with_terminal(
+pub fn InterfaceOptions::with_terminal(
   self : InterfaceOptions,
   terminal : Bool,
 ) -> InterfaceOptions {
@@ -114,7 +114,7 @@ fn InterfaceOptions::with_terminal(
 }
 
 ///|
-fn InterfaceOptions::with_history_size(
+pub fn InterfaceOptions::with_history_size(
   self : InterfaceOptions,
   size : Int,
 ) -> InterfaceOptions {
@@ -133,7 +133,7 @@ fn InterfaceOptions::with_history_size(
 }
 
 ///|
-fn InterfaceOptions::with_prompt(
+pub fn InterfaceOptions::with_prompt(
   self : InterfaceOptions,
   prompt : String,
 ) -> InterfaceOptions {
@@ -286,6 +286,7 @@ pub fn Interface::prompt(
   self : Interface,
   preserve_cursor~ : Bool = false,
 ) -> Unit {
+  ignore(preserve_cursor)
   if self.is_closed || self.is_paused {
     return
   }
@@ -301,6 +302,7 @@ pub fn Interface::prompt(
         // Add to history if not duplicate or if duplicates are allowed
         if !self.remove_duplicates || !self.is_duplicate_history(line) {
           mbt_readline_add_history(string_to_c_bytes(line))
+          self.events.emit_history(line) |> ignore
         }
       }
     None => {
@@ -312,7 +314,7 @@ pub fn Interface::prompt(
 }
 
 ///|
-fn Interface::write(
+pub fn Interface::write(
   self : Interface,
   data : String,
   key~ : String? = None,
@@ -351,11 +353,21 @@ extern "C" fn mbt_readline_write(data : Bytes) -> Unit = "mbt_readline_write"
 extern "C" fn mbt_readline_clear_history() -> Unit = "mbt_readline_clear_history"
 
 ///|
-fn Interface::resume(self : Interface) -> Interface {
+pub fn Interface::resume_input(self : Interface) -> Interface {
   if !self.is_closed && self.is_paused {
     self.is_paused = false
     mbt_readline_resume()
     self.events.emit_resume() |> ignore
+  }
+  self
+}
+
+///|
+pub fn Interface::pause(self : Interface) -> Interface {
+  if !self.is_closed && !self.is_paused {
+    self.is_paused = true
+    mbt_readline_pause()
+    self.events.emit_pause() |> ignore
   }
   self
 }
@@ -372,20 +384,20 @@ pub fn Interface::close(self : Interface) -> Unit {
 // Prompt management
 
 ///|
-fn Interface::set_prompt(self : Interface, prompt : String) -> Unit {
+pub fn Interface::set_prompt(self : Interface, prompt : String) -> Unit {
   self.prompt_text = prompt
   mbt_readline_set_prompt(string_to_c_bytes(prompt))
 }
 
 ///|
-fn Interface::get_prompt(self : Interface) -> String {
+pub fn Interface::get_prompt(self : Interface) -> String {
   self.prompt_text
 }
 
 // History management
 
 ///|
-fn Interface::clear_history(_self : Interface) -> Unit {
+pub fn Interface::clear_history(_self : Interface) -> Unit {
   mbt_readline_clear_history()
 }
 
@@ -405,7 +417,7 @@ fn Interface::is_duplicate_history(_self : Interface, line : String) -> Bool {
 // Event emitter delegation
 
 ///|
-fn Interface::on(
+pub fn Interface::on(
   self : Interface,
   event : String,
   listener : EventListener[ReadlineEvent],
@@ -415,7 +427,7 @@ fn Interface::on(
 }
 
 ///|
-fn Interface::once(
+pub fn Interface::once(
   self : Interface,
   event : String,
   listener : EventListener[ReadlineEvent],
@@ -425,7 +437,7 @@ fn Interface::once(
 }
 
 ///|
-fn Interface::off(
+pub fn Interface::off(
   self : Interface,
   event : String,
   listener : EventListener[ReadlineEvent],
@@ -435,7 +447,7 @@ fn Interface::off(
 }
 
 ///|
-fn Interface::emit(
+pub fn Interface::emit(
   self : Interface,
   event : String,
   data : ReadlineEvent,
@@ -444,12 +456,27 @@ fn Interface::emit(
 }
 
 ///|
-fn Interface::emit_line(self : Interface, line : String) -> Bool {
+pub fn Interface::emit_line(self : Interface, line : String) -> Bool {
   self.events.emit_line(line)
 }
 
 ///|
-fn Interface::remove_all_listeners(
+pub fn Interface::emit_sigint(self : Interface) -> Bool {
+  self.events.emit_sigint()
+}
+
+///|
+pub fn Interface::emit_sigtstp(self : Interface) -> Bool {
+  self.events.emit_sigtstp()
+}
+
+///|
+pub fn Interface::emit_sigcont(self : Interface) -> Bool {
+  self.events.emit_sigcont()
+}
+
+///|
+pub fn Interface::remove_all_listeners(
   self : Interface,
   event~ : String?,
 ) -> Interface {
@@ -458,19 +485,19 @@ fn Interface::remove_all_listeners(
 }
 
 ///|
-fn Interface::listener_count(self : Interface, event : String) -> Int {
+pub fn Interface::listener_count(self : Interface, event : String) -> Int {
   self.events.listener_count(event)
 }
 
 ///|
-fn Interface::event_names(self : Interface) -> Array[String] {
+pub fn Interface::event_names(self : Interface) -> Array[String] {
   self.events.event_names()
 }
 
 // Convenience event methods
 
 ///|
-fn Interface::on_line(
+pub fn Interface::on_line(
   self : Interface,
   listener : (String) -> Unit,
 ) -> Interface {
@@ -479,37 +506,37 @@ fn Interface::on_line(
 }
 
 ///|
-fn Interface::on_close(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_close(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_close(listener) |> ignore
   self
 }
 
 ///|
-fn Interface::on_pause(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_pause(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_pause(listener) |> ignore
   self
 }
 
 ///|
-fn Interface::on_resume(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_resume(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_resume(listener) |> ignore
   self
 }
 
 ///|
-fn Interface::on_sigint(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigint(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_sigint(listener) |> ignore
   self
 }
 
 ///|
-fn Interface::on_sigtstp(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigtstp(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_sigtstp(listener) |> ignore
   self
 }
 
 ///|
-fn Interface::on_sigcont(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigcont(self : Interface, listener : () -> Unit) -> Interface {
   self.events.on_sigcont(listener) |> ignore
   self
 }
@@ -517,17 +544,17 @@ fn Interface::on_sigcont(self : Interface, listener : () -> Unit) -> Interface {
 // Properties (Node.js compatible)
 
 ///|
-fn Interface::closed(self : Interface) -> Bool {
+pub fn Interface::closed(self : Interface) -> Bool {
   self.is_closed
 }
 
 ///|
-fn Interface::paused(self : Interface) -> Bool {
+pub fn Interface::paused(self : Interface) -> Bool {
   self.is_paused
 }
 
 ///|
-fn Interface::terminal(self : Interface) -> Bool {
+pub fn Interface::terminal(self : Interface) -> Bool {
   self.is_terminal
 }
 
