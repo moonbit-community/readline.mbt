@@ -6,7 +6,7 @@ fn main {
 }
 
 ///|
-fn repl() -> Unit {  
+fn repl() -> Unit {
   let repl = @lib.REPL::new(prompt="moonagent> ")
   ignore(
     repl

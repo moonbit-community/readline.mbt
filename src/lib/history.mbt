@@ -12,8 +12,8 @@ pub struct History {
 
 ///|
 pub fn History::new(
-  max_size~ : Int = 1000,
-  remove_duplicates~ : Bool = true,
+  max_size? : Int = 1000,
+  remove_duplicates? : Bool = true,
 ) -> History {
   let history = History::{
     entries: Array::new(),
@@ -146,7 +146,7 @@ pub struct Completer {
 }
 
 ///|
-pub fn Completer::new(completion_fn~ : CompletionFunction? = None) -> Completer {
+pub fn Completer::new(completion_fn? : CompletionFunction? = None) -> Completer {
   Completer::{ completion_fn, word_break_chars: " \t\n\"\\'`@$><=;|&{(" }
 }
 
@@ -193,7 +193,10 @@ pub fn Completer::set_completion_function(
 }
 
 ///|
-pub fn Completer::set_word_break_chars(self : Completer, chars : String) -> Unit {
+pub fn Completer::set_word_break_chars(
+  self : Completer,
+  chars : String,
+) -> Unit {
   self.word_break_chars = chars
 }
 
@@ -367,7 +370,7 @@ pub fn create_multi_completer(
 ///|
 pub fn format_completions(
   completions : Array[String],
-  columns~ : Int = 80,
+  columns? : Int = 80,
 ) -> String {
   if completions.length() == 0 {
     return ""

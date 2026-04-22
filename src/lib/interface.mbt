@@ -284,7 +284,7 @@ pub fn Interface::question(
 ///|
 pub fn Interface::prompt(
   self : Interface,
-  preserve_cursor~ : Bool = false,
+  preserve_cursor? : Bool = false,
 ) -> Unit {
   ignore(preserve_cursor)
   if self.is_closed || self.is_paused {
@@ -317,7 +317,7 @@ pub fn Interface::prompt(
 pub fn Interface::write(
   self : Interface,
   data : String,
-  key~ : String? = None,
+  key? : String? = None,
 ) -> Unit {
   if self.is_closed {
     return
@@ -506,37 +506,55 @@ pub fn Interface::on_line(
 }
 
 ///|
-pub fn Interface::on_close(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_close(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_close(listener) |> ignore
   self
 }
 
 ///|
-pub fn Interface::on_pause(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_pause(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_pause(listener) |> ignore
   self
 }
 
 ///|
-pub fn Interface::on_resume(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_resume(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_resume(listener) |> ignore
   self
 }
 
 ///|
-pub fn Interface::on_sigint(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigint(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_sigint(listener) |> ignore
   self
 }
 
 ///|
-pub fn Interface::on_sigtstp(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigtstp(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_sigtstp(listener) |> ignore
   self
 }
 
 ///|
-pub fn Interface::on_sigcont(self : Interface, listener : () -> Unit) -> Interface {
+pub fn Interface::on_sigcont(
+  self : Interface,
+  listener : () -> Unit,
+) -> Interface {
   self.events.on_sigcont(listener) |> ignore
   self
 }

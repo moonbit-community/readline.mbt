@@ -17,12 +17,14 @@ pub type CompletionFunction = (String) -> (Array[String], String)
 
 ///| Create a readline interface with specified options
 
-///| Create a simple readline interface with just input/output streams  
+///|
+/// Create a simple readline interface with just input/output streams  
 pub fn createInterface(input? : String, output? : String) -> Interface {
   create_interface_simple(input~, output~)
 }
 
-///| Create a readline interface with full options
+///|
+/// Create a readline interface with full options
 pub fn createInterfaceWithOptions(options : InterfaceOptions) -> Interface {
   create_interface(options)
 }
@@ -32,34 +34,40 @@ pub fn createInterfaceWithOptions(options : InterfaceOptions) -> Interface {
 
 // Terminal cursor and screen manipulation functions (Node.js compatible)
 
-///| Clear the screen down from cursor position
+///|
+/// Clear the screen down from cursor position
 pub fn clearScreenDown(stream? : String) -> Unit {
   clear_screen_down(_stream=stream)
 }
 
-///| Move cursor to specified position
+///|
+/// Move cursor to specified position
 pub fn cursorTo(x : Int, y? : Int, stream? : String) -> Unit {
   cursor_to(x, y~, _stream=stream)
 }
 
-///| Move cursor by relative amount
+///|
+/// Move cursor by relative amount
 pub fn moveCursor(dx : Int, dy? : Int, stream? : String) -> Unit {
   move_cursor(dx, dy~, _stream=stream)
 }
 
-///| Clear current line
+///|
+/// Clear current line
 pub fn clearLine(dir : Int, stream? : String) -> Unit {
   clear_line(dir, _stream=stream)
 }
 
 // Utility functions for working with readline
 
-///| Check if a file descriptor refers to a terminal
+///|
+/// Check if a file descriptor refers to a terminal
 pub fn isatty(fd : Int) -> Bool {
   mbt_is_tty(fd)
 }
 
-///| Get terminal window size
+///|
+/// Get terminal window size
 pub fn getWindowSize() -> (Int, Int)? {
   let rows = Ref::{ val: 0 }
   let cols = Ref::{ val: 0 }
@@ -72,7 +80,8 @@ pub fn getWindowSize() -> (Int, Int)? {
 
 // High-level convenience functions
 
-///| Simple question-answer interaction
+///|
+/// Simple question-answer interaction
 pub fn question(prompt : String, callback : (String) -> Unit) -> Unit {
   let rl = createInterface()
   rl.question(prompt, fn(answer) {
@@ -81,7 +90,8 @@ pub fn question(prompt : String, callback : (String) -> Unit) -> Unit {
   })
 }
 
-///| Async version of simple question (placeholder - not implemented)
+///|
+/// Async version of simple question (placeholder - not implemented)
 pub fn questionAsync(prompt : String) -> String {
   let rl = createInterface()
   defer rl.close()
@@ -89,11 +99,12 @@ pub fn questionAsync(prompt : String) -> String {
   prompt // Placeholder return
 }
 
-///| Confirm dialog (y/n)
+///|
+/// Confirm dialog (y/n)
 pub fn confirm(
   message : String,
   callback : (Bool) -> Unit,
-  default~ : Bool = false,
+  default? : Bool = false,
 ) -> Unit {
   let rl = createInterface()
   let suffix = if default { " [Y/n]" } else { " [y/N]" }
@@ -123,13 +134,15 @@ pub fn confirm(
   ask_again()
 }
 
-///| Async confirm dialog (placeholder - not implemented)
-pub fn confirmAsync(_message : String, default~ : Bool = false) -> Bool {
+///|
+/// Async confirm dialog (placeholder - not implemented)
+pub fn confirmAsync(_message : String, default? : Bool = false) -> Bool {
   // This would be async in a real implementation
   default // Placeholder return
 }
 
-///| Read multiple lines until empty line
+///|
+/// Read multiple lines until empty line
 pub fn readMultipleLines(
   prompt : String,
   callback : (Array[String]) -> Unit,
@@ -151,13 +164,15 @@ pub fn readMultipleLines(
   read_next()
 }
 
-///| Async version of reading multiple lines (placeholder - not implemented)
+///|
+/// Async version of reading multiple lines (placeholder - not implemented)
 pub fn readMultipleLinesAsync(_prompt : String) -> Array[String] {
   // This would be async in a real implementation
   Array::new() // Placeholder return
 }
 
-///| Interactive menu selection
+///|
+/// Interactive menu selection
 pub fn selectFromMenu(
   title : String,
   options : Array[String],
@@ -193,7 +208,8 @@ pub fn selectFromMenu(
   ask_selection()
 }
 
-///| Async menu selection (placeholder - not implemented)
+///|
+/// Async menu selection (placeholder - not implemented)
 pub fn selectFromMenuAsync(_title : String, _options : Array[String]) -> Int? {
   // This would be async in a real implementation
   None // Placeholder return
@@ -201,7 +217,8 @@ pub fn selectFromMenuAsync(_title : String, _options : Array[String]) -> Int? {
 
 // Advanced readline features
 
-///| Create a readline interface with file completion
+///|
+/// Create a readline interface with file completion
 pub fn createInterfaceWithFileCompletion(
   input? : String,
   output? : String,
@@ -218,7 +235,8 @@ pub fn createInterfaceWithFileCompletion(
   create_interface(options)
 }
 
-///| Create a readline interface with command completion
+///|
+/// Create a readline interface with command completion
 pub fn createInterfaceWithCommands(commands : Array[String]) -> Interface {
   let options = InterfaceOptions::new().with_completer(
     command_completer(commands),
@@ -226,7 +244,8 @@ pub fn createInterfaceWithCommands(commands : Array[String]) -> Interface {
   create_interface(options)
 }
 
-///| Create a readline interface with custom completion
+///|
+/// Create a readline interface with custom completion
 pub fn createInterfaceWithCompletion(
   completer : CompletionFunction,
   input? : String,
@@ -250,7 +269,7 @@ pub fn createInterfaceWithCompletion(
 pub fn password(
   prompt : String,
   callback : (String) -> Unit,
-  _mask~ : String = "*",
+  _mask? : String = "*",
 ) -> Unit {
   // Note: This is a simplified implementation
   // A full implementation would need terminal mode manipulation
@@ -262,8 +281,9 @@ pub fn password(
   })
 }
 
-///| Async password input (placeholder - not implemented)
-pub fn passwordAsync(_prompt : String, _mask~ : String = "*") -> String {
+///|
+/// Async password input (placeholder - not implemented)
+pub fn passwordAsync(_prompt : String, _mask? : String = "*") -> String {
   // This would be async in a real implementation
   "" // Placeholder return
 }
@@ -278,7 +298,7 @@ pub struct REPL {
 }
 
 ///|
-pub fn REPL::new(prompt~ : String = "> ") -> REPL {
+pub fn REPL::new(prompt? : String = "> ") -> REPL {
   let rl = createInterface()
   let repl = REPL::{ rl, commands: Map::new(), prompt_text: prompt }
   // Force the use of mutability by reassigning

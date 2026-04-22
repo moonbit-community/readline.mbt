@@ -22,7 +22,7 @@ fn AsyncInterface::new(options : InterfaceOptions) -> AsyncInterface {
 pub fn AsyncInterface::write(
   self : AsyncInterface,
   data : String,
-  key~ : String? = None,
+  key? : String? = None,
 ) -> Unit {
   self.interface.write(data, key~)
 }
@@ -33,7 +33,10 @@ pub fn AsyncInterface::close(self : AsyncInterface) -> Unit {
 }
 
 ///|
-pub fn AsyncInterface::set_prompt(self : AsyncInterface, prompt : String) -> Unit {
+pub fn AsyncInterface::set_prompt(
+  self : AsyncInterface,
+  prompt : String,
+) -> Unit {
   self.interface.set_prompt(prompt)
 }
 

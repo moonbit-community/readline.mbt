@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/string",
+  "moonbitlang/core/encoding/utf8",
+}
+
+supported_targets = "native"
+
+options(
+  "native-stub": [ "readline_wrapper.c" ],
+)

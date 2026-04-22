@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/string",
+  "allwefantasy/readline.mbt/lib",
+}
+
+supported_targets = "native"
+
+options(
+  is_main: true,
+)
