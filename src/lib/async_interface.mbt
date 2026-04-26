@@ -19,31 +19,34 @@ fn AsyncInterface::new(options : InterfaceOptions) -> AsyncInterface {
 // Basic delegation methods (synchronous for now)
 
 ///|
-fn AsyncInterface::write(
+pub fn AsyncInterface::write(
   self : AsyncInterface,
   data : String,
-  key~ : String? = None,
+  key? : String? = None,
 ) -> Unit {
   self.interface.write(data, key~)
 }
 
 ///|
-fn AsyncInterface::close(self : AsyncInterface) -> Unit {
+pub fn AsyncInterface::close(self : AsyncInterface) -> Unit {
   self.interface.close()
 }
 
 ///|
-fn AsyncInterface::set_prompt(self : AsyncInterface, prompt : String) -> Unit {
+pub fn AsyncInterface::set_prompt(
+  self : AsyncInterface,
+  prompt : String,
+) -> Unit {
   self.interface.set_prompt(prompt)
 }
 
 ///|
-fn AsyncInterface::get_prompt(self : AsyncInterface) -> String {
+pub fn AsyncInterface::get_prompt(self : AsyncInterface) -> String {
   self.interface.get_prompt()
 }
 
 ///|
-fn AsyncInterface::closed(self : AsyncInterface) -> Bool {
+pub fn AsyncInterface::closed(self : AsyncInterface) -> Bool {
   self.interface.closed()
 }
 

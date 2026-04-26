@@ -11,9 +11,9 @@ pub struct History {
 }
 
 ///|
-fn History::new(
-  max_size~ : Int = 1000,
-  remove_duplicates~ : Bool = true,
+pub fn History::new(
+  max_size? : Int = 1000,
+  remove_duplicates? : Bool = true,
 ) -> History {
   let history = History::{
     entries: Array::new(),
@@ -28,7 +28,7 @@ fn History::new(
 }
 
 ///|
-fn History::add(self : History, entry : String) -> Unit {
+pub fn History::add(self : History, entry : String) -> Unit {
   if entry.length() == 0 {
     return
   }
@@ -51,7 +51,7 @@ fn History::add(self : History, entry : String) -> Unit {
 }
 
 ///|
-fn History::get(self : History, index : Int) -> String? {
+pub fn History::get(self : History, index : Int) -> String? {
   if index >= 0 && index < self.entries.length() {
     Some(self.entries[index])
   } else {
@@ -60,23 +60,23 @@ fn History::get(self : History, index : Int) -> String? {
 }
 
 ///|
-fn History::length(self : History) -> Int {
+pub fn History::length(self : History) -> Int {
   self.entries.length()
 }
 
 ///|
-fn History::clear(self : History) -> Unit {
+pub fn History::clear(self : History) -> Unit {
   self.entries.clear()
   self.current_index = -1
 }
 
 ///|
-fn History::get_all(self : History) -> Array[String] {
+pub fn History::get_all(self : History) -> Array[String] {
   self.entries.copy()
 }
 
 ///|
-fn History::set_max_size(self : History, size : Int) -> Unit {
+pub fn History::set_max_size(self : History, size : Int) -> Unit {
   self.max_size = size
   while self.entries.length() > self.max_size {
     ignore(self.entries.remove(0))
@@ -86,7 +86,7 @@ fn History::set_max_size(self : History, size : Int) -> Unit {
 // Navigation methods for readline
 
 ///|
-fn History::previous(self : History) -> String? {
+pub fn History::previous(self : History) -> String? {
   if self.entries.length() == 0 {
     return None
   }
@@ -97,7 +97,7 @@ fn History::previous(self : History) -> String? {
 }
 
 ///|
-fn History::next(self : History) -> String? {
+pub fn History::next(self : History) -> String? {
   if self.entries.length() == 0 {
     return None
   }
@@ -113,7 +113,7 @@ fn History::next(self : History) -> String? {
 // Search functionality
 
 ///|
-fn History::search(self : History, pattern : String) -> Array[String] {
+pub fn History::search(self : History, pattern : String) -> Array[String] {
   let results = Array::new()
   for entry in self.entries {
     if entry.contains(pattern) {
@@ -124,7 +124,7 @@ fn History::search(self : History, pattern : String) -> Array[String] {
 }
 
 ///|
-fn History::reverse_search(self : History, pattern : String) -> String? {
+pub fn History::reverse_search(self : History, pattern : String) -> String? {
   // Search backwards from current position
   for i = self.current_index - 1; i >= 0; i = i - 1 {
     let entry = self.entries[i]
@@ -146,12 +146,12 @@ pub struct Completer {
 }
 
 ///|
-fn Completer::new(completion_fn~ : CompletionFunction? = None) -> Completer {
+pub fn Completer::new(completion_fn? : CompletionFunction? = None) -> Completer {
   Completer::{ completion_fn, word_break_chars: " \t\n\"\\'`@$><=;|&{(" }
 }
 
 ///|
-fn Completer::complete(
+pub fn Completer::complete(
   self : Completer,
   line : String,
   cursor_pos : Int,
@@ -160,7 +160,7 @@ fn Completer::complete(
     Some(fn_ref) => {
       // Extract the word being completed
       let word_start = self.find_word_start(line, cursor_pos)
-      let word = line.substring(start=word_start, end=cursor_pos)
+      let word = line[word_start:cursor_pos].to_string()
       fn_ref(word)
     }
     None => (Array::new(), "")
@@ -175,8 +175,8 @@ fn Completer::find_word_start(
 ) -> Int {
   let mut start = cursor_pos - 1
   while start >= 0 {
-    let char = line.get(start).unwrap_or(' ')
-    if self.word_break_chars.contains(char.to_string()) {
+    let char = line[start:start + 1].to_string()
+    if self.word_break_chars.contains(char) {
       return start + 1
     }
     start = start - 1
@@ -185,7 +185,7 @@ fn Completer::find_word_start(
 }
 
 ///|
-fn Completer::set_completion_function(
+pub fn Completer::set_completion_function(
   self : Completer,
   fn_ref : CompletionFunction,
 ) -> Unit {
@@ -193,7 +193,10 @@ fn Completer::set_completion_function(
 }
 
 ///|
-fn Completer::set_word_break_chars(self : Completer, chars : String) -> Unit {
+pub fn Completer::set_word_break_chars(
+  self : Completer,
+  chars : String,
+) -> Unit {
   self.word_break_chars = chars
 }
 
@@ -282,7 +285,7 @@ fn fuzzy_match(pattern : String, text : String) -> Bool {
   let mut pattern_idx = 0
   let mut text_idx = 0
   while pattern_idx < pattern.length() && text_idx < text.length() {
-    if pattern.get(pattern_idx) == text.get(text_idx) {
+    if pattern.code_unit_at(pattern_idx) == text.code_unit_at(text_idx) {
       pattern_idx = pattern_idx + 1
     }
     text_idx = text_idx + 1
@@ -297,7 +300,7 @@ fn fuzzy_score(pattern : String, text : String) -> Int {
   let mut last_match = -1
   for text_idx = 0; text_idx < text.length(); text_idx = text_idx + 1 {
     if pattern_idx < pattern.length() &&
-      pattern.get(pattern_idx) == text.get(text_idx) {
+      pattern.code_unit_at(pattern_idx) == text.code_unit_at(text_idx) {
       score = score + 1
       // Consecutive matches get bonus points
       if last_match == text_idx - 1 {
@@ -325,7 +328,7 @@ pub fn history_completer(history : History) -> CompletionFunction {
 
     // Search through history entries
     for entry in history.get_all() {
-      if entry.strip_prefix(word) is Some(_) && not(seen.contains(entry)) {
+      if entry.strip_prefix(word) is Some(_) && !seen.contains(entry) {
         completions.push(entry)
         seen.set(entry, true)
       }
@@ -352,7 +355,7 @@ pub fn create_multi_completer(
     for completer in completers {
       let (completions, _) = completer(word)
       for completion in completions {
-        if not(seen.contains(completion)) {
+        if !seen.contains(completion) {
           all_completions.push(completion)
           seen.set(completion, true)
         }
@@ -367,7 +370,7 @@ pub fn create_multi_completer(
 ///|
 pub fn format_completions(
   completions : Array[String],
-  columns~ : Int = 80,
+  columns? : Int = 80,
 ) -> String {
   if completions.length() == 0 {
     return ""

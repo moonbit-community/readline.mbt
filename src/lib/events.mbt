@@ -129,7 +129,7 @@ pub enum ReadlineEvent {
 }
 
 ///|
-typealias EventEmitter[ReadlineEvent] as ReadlineEventEmitter
+type ReadlineEventEmitter = EventEmitter[ReadlineEvent]
 
 ///|
 fn ReadlineEventEmitter::create() -> ReadlineEventEmitter {
@@ -286,4 +286,12 @@ fn ReadlineEventEmitter::emit_sigtstp(self : ReadlineEventEmitter) -> Bool {
 ///|
 fn ReadlineEventEmitter::emit_sigcont(self : ReadlineEventEmitter) -> Bool {
   self.emit("SIGCONT", SIGCONT)
+}
+
+///|
+fn ReadlineEventEmitter::emit_history(
+  self : ReadlineEventEmitter,
+  entry : String,
+) -> Bool {
+  self.emit("history", History(entry))
 }

@@ -1,7 +1,0 @@
-{
-  "is_main": true,
-  "supported-targets": ["native"],  
-  "import": [
-    "allwefantasy/readline.mbt/lib"
-  ]  
-}

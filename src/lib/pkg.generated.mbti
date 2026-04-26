@@ -1,0 +1,214 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "allwefantasy/readline.mbt/lib"
+
+// Values
+pub fn cleanup() -> Unit
+
+pub fn clearLine(Int, stream? : String) -> Unit
+
+pub fn clearScreenDown(stream? : String) -> Unit
+
+pub fn clear_line(Int, _stream~ : String?) -> Unit
+
+pub fn clear_screen_down(_stream~ : String?) -> Unit
+
+pub fn command_completer(Array[String]) -> (String) -> (Array[String], String)
+
+pub fn confirm(String, (Bool) -> Unit, default? : Bool) -> Unit
+
+pub fn confirmAsync(String, default? : Bool) -> Bool
+
+pub fn createInterface(input? : String, output? : String) -> Interface
+
+pub fn createInterfaceWithCommands(Array[String]) -> Interface
+
+pub fn createInterfaceWithCompletion((String) -> (Array[String], String), input? : String, output? : String) -> Interface
+
+pub fn createInterfaceWithFileCompletion(input? : String, output? : String) -> Interface
+
+pub fn createInterfaceWithOptions(InterfaceOptions) -> Interface
+
+pub fn create_async_interface(InterfaceOptions) -> AsyncInterface
+
+pub fn create_async_interface_simple(input~ : String?, output~ : String?) -> AsyncInterface
+
+pub fn create_interface(InterfaceOptions) -> Interface
+
+pub fn create_interface_simple(input~ : String?, output~ : String?) -> Interface
+
+pub fn create_list_completer(Array[String]) -> (String) -> (Array[String], String)
+
+pub fn create_multi_completer(Array[(String) -> (Array[String], String)]) -> (String) -> (Array[String], String)
+
+pub fn cursorTo(Int, y? : Int, stream? : String) -> Unit
+
+pub fn cursor_to(Int, y~ : Int?, _stream~ : String?) -> Unit
+
+pub fn file_path_completer(String) -> (Array[String], String)
+
+pub fn format_completions(Array[String], columns? : Int) -> String
+
+pub fn fuzzy_completer(Array[String]) -> (String) -> (Array[String], String)
+
+pub fn getWindowSize() -> (Int, Int)?
+
+pub fn history_completer(History) -> (String) -> (Array[String], String)
+
+pub fn initialize() -> Unit
+
+pub fn isatty(Int) -> Bool
+
+pub fn moveCursor(Int, dy? : Int, stream? : String) -> Unit
+
+pub fn move_cursor(Int, dy~ : Int?, _stream~ : String?) -> Unit
+
+pub fn password(String, (String) -> Unit, _mask? : String) -> Unit
+
+pub fn passwordAsync(String, _mask? : String) -> String
+
+pub fn question(String, (String) -> Unit) -> Unit
+
+pub fn questionAsync(String) -> String
+
+pub fn readMultipleLines(String, (Array[String]) -> Unit) -> Unit
+
+pub fn readMultipleLinesAsync(String) -> Array[String]
+
+pub fn selectFromMenu(String, Array[String], (Int?) -> Unit) -> Unit
+
+pub fn selectFromMenuAsync(String, Array[String]) -> Int?
+
+// Errors
+
+// Types and methods
+pub struct AsyncInterface {
+  interface : Interface
+}
+pub fn AsyncInterface::close(Self) -> Unit
+pub fn AsyncInterface::closed(Self) -> Bool
+pub fn AsyncInterface::get_prompt(Self) -> String
+pub fn AsyncInterface::set_prompt(Self, String) -> Unit
+pub fn AsyncInterface::write(Self, String, key? : String?) -> Unit
+
+pub struct Completer {
+  mut completion_fn : ((String) -> (Array[String], String))?
+  mut word_break_chars : String
+}
+pub fn Completer::complete(Self, String, Int) -> (Array[String], String)
+pub fn Completer::new(completion_fn? : ((String) -> (Array[String], String))?) -> Self
+pub fn Completer::set_completion_function(Self, (String) -> (Array[String], String)) -> Unit
+pub fn Completer::set_word_break_chars(Self, String) -> Unit
+
+pub struct EventEmitter[T] {
+  mut listeners : Map[String, Array[EventListener[T]]]
+}
+
+pub struct EventListener[T]((T) -> Unit)
+
+pub struct History {
+  mut entries : Array[String]
+  mut max_size : Int
+  mut remove_duplicates : Bool
+  mut current_index : Int
+}
+pub fn History::add(Self, String) -> Unit
+pub fn History::clear(Self) -> Unit
+pub fn History::get(Self, Int) -> String?
+pub fn History::get_all(Self) -> Array[String]
+pub fn History::length(Self) -> Int
+pub fn History::new(max_size? : Int, remove_duplicates? : Bool) -> Self
+pub fn History::next(Self) -> String?
+pub fn History::previous(Self) -> String?
+pub fn History::reverse_search(Self, String) -> String?
+pub fn History::search(Self, String) -> Array[String]
+pub fn History::set_max_size(Self, Int) -> Unit
+
+pub struct Interface {
+  mut events : EventEmitter[ReadlineEvent]
+  mut prompt_text : String
+  mut is_paused : Bool
+  mut is_closed : Bool
+  mut history_max_size : Int
+  mut completer : ((String) -> (Array[String], String))?
+  mut remove_duplicates : Bool
+  input_path : String
+  output_path : String
+  is_terminal : Bool
+}
+pub fn Interface::clear_history(Self) -> Unit
+pub fn Interface::close(Self) -> Unit
+pub fn Interface::closed(Self) -> Bool
+pub fn Interface::emit(Self, String, ReadlineEvent) -> Bool
+pub fn Interface::emit_line(Self, String) -> Bool
+pub fn Interface::emit_sigcont(Self) -> Bool
+pub fn Interface::emit_sigint(Self) -> Bool
+pub fn Interface::emit_sigtstp(Self) -> Bool
+pub fn Interface::event_names(Self) -> Array[String]
+pub fn Interface::get_prompt(Self) -> String
+pub fn Interface::listener_count(Self, String) -> Int
+pub fn Interface::off(Self, String, EventListener[ReadlineEvent]) -> Self
+pub fn Interface::on(Self, String, EventListener[ReadlineEvent]) -> Self
+pub fn Interface::on_close(Self, () -> Unit) -> Self
+pub fn Interface::on_line(Self, (String) -> Unit) -> Self
+pub fn Interface::on_pause(Self, () -> Unit) -> Self
+pub fn Interface::on_resume(Self, () -> Unit) -> Self
+pub fn Interface::on_sigcont(Self, () -> Unit) -> Self
+pub fn Interface::on_sigint(Self, () -> Unit) -> Self
+pub fn Interface::on_sigtstp(Self, () -> Unit) -> Self
+pub fn Interface::once(Self, String, EventListener[ReadlineEvent]) -> Self
+pub fn Interface::pause(Self) -> Self
+pub fn Interface::paused(Self) -> Bool
+pub fn Interface::prompt(Self, preserve_cursor? : Bool) -> Unit
+pub fn Interface::question(Self, String, (String) -> Unit) -> Unit
+pub fn Interface::remove_all_listeners(Self, event~ : String?) -> Self
+pub fn Interface::resume_input(Self) -> Self
+pub fn Interface::set_prompt(Self, String) -> Unit
+pub fn Interface::terminal(Self) -> Bool
+pub fn Interface::write(Self, String, key? : String?) -> Unit
+
+pub struct InterfaceOptions {
+  input : String?
+  output : String?
+  completer : ((String) -> (Array[String], String))?
+  terminal : Bool?
+  history_size : Int?
+  prompt : String?
+  cr_lf_delay : Int?
+  escape_code_timeout : Int?
+  tab_size : Int?
+  remove_history_duplicates : Bool?
+}
+pub fn InterfaceOptions::new() -> Self
+pub fn InterfaceOptions::with_completer(Self, (String) -> (Array[String], String)) -> Self
+pub fn InterfaceOptions::with_history_size(Self, Int) -> Self
+pub fn InterfaceOptions::with_input(Self, String) -> Self
+pub fn InterfaceOptions::with_output(Self, String) -> Self
+pub fn InterfaceOptions::with_prompt(Self, String) -> Self
+pub fn InterfaceOptions::with_terminal(Self, Bool) -> Self
+
+pub struct REPL {
+  rl : Interface
+  mut commands : Map[String, (Array[String]) -> Unit]
+  prompt_text : String
+}
+pub fn REPL::add_command(Self, String, (Array[String]) -> Unit) -> Self
+pub fn REPL::close(Self) -> Unit
+pub fn REPL::new(prompt? : String) -> Self
+pub fn REPL::start(Self) -> Unit
+
+pub enum ReadlineEvent {
+  Line(String)
+  Close
+  Pause
+  Resume
+  SIGINT
+  SIGTSTP
+  SIGCONT
+  History(String)
+}
+
+// Type aliases
+pub type CompletionFunction = (String) -> (Array[String], String)
+
+// Traits
+
